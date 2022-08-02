@@ -1,0 +1,46 @@
+stages:
+  - build
+
+.buildImageJob:
+  stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:debug@sha256:fcccd2ab9f3892e33fc7f2e950c8e4fc665e7a4c66f6a9d70b300d7a2103592f
+    entrypoint: [ "" ]
+  script:
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor
+      --context $CI_PROJECT_DIR
+      --dockerfile $CI_PROJECT_DIR/Dockerfile
+      --destination $CI_REGISTRY_IMAGE:$TAG
+
+buildLatest:
+  extends:
+    - .buildImageJob
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+    - if: '$CI_COMMIT_TAG'
+      when: never
+  variables:
+    TAG: "latest"
+
+buildBranch:
+  extends:
+    - .buildImageJob
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+      when: never
+    - if: '$CI_COMMIT_TAG'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH'
+  variables:
+    TAG: $CI_COMMIT_REF_SLUG
+
+buildTag:
+  extends:
+    - .buildImageJob
+  rules:
+    - if: '$CI_COMMIT_TAG'
+  variables:
+    TAG: $CI_COMMIT_TAG
