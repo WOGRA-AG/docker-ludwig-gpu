@@ -25,7 +25,7 @@ ARG LIBNVINFER_MAJOR_VERSION
 # Let us install tzdata painlessly
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Needed for string substitutioDOCKER_BUILDKIT=1n
+# Needed for string substitution
 SHELL ["/bin/bash", "-c"]
 # Pick up some TF dependencies
 RUN /bin/bash -c 'apt-get update && apt-get install -y --no-install-recommends \
@@ -76,8 +76,7 @@ RUN apt-get update && apt-get install -y \
     python3 \
     python3-pip
 
-RUN --mount=type=cache,target=/root/.cache \
-    python3 -m pip --no-cache-dir install --upgrade setuptools
+RUN -python3 -m pip --no-cache-dir install --upgrade setuptools
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         build-essential \
@@ -100,14 +99,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         && apt-get purge -y --auto-remove \
         && rm -rf /var/lib/apt/lists/*
 
-# Fix python version according to version fixed by poetry
+# Fix python version
 FROM base as pyenv
 RUN curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash
 ENV HOME /root
 ENV PYENV_ROOT $HOME/.pyenv
 ENV PATH $PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH
 RUN echo 'eval "$(pyenv init -)"' >> /root/.bashrc
-RUN pyenv install 3.8.9 && pyenv global 3.8.9 && pip install poetry==1.1.14
+RUN pyenv install 3.8.9 && pyenv global 3.8.9
 ENV PATH=/root/.pyenv/versions/3.8.9/bin:$PATH
 RUN rm -f /usr/local/bin/python && ln -s $(which python3) /usr/local/bin/python
 
