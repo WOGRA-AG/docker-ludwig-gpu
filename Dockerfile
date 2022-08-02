@@ -109,6 +109,7 @@ RUN echo 'eval "$(pyenv init -)"' >> /root/.bashrc
 RUN pyenv install 3.8.9 && pyenv global 3.8.9
 ENV PATH=/root/.pyenv/versions/3.8.9/bin:$PATH
 RUN rm -f /usr/local/bin/python && ln -s $(which python3) /usr/local/bin/python
+RUN python3 -m pip install --upgrade pip
 
 # Install ludwig using poetry lock files
 FROM pyenv as ludwig-gpu
