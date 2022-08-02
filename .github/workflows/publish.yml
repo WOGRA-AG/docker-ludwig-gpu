@@ -13,6 +13,8 @@ on:
   push: 
     tags:
       - '*'
+    branches:
+      - "main"
 
 jobs:
   push_to_registry:
