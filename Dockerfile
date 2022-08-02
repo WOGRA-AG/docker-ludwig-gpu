@@ -112,6 +112,6 @@ RUN rm -f /usr/local/bin/python && ln -s $(which python3) /usr/local/bin/python
 
 # Install ludwig using poetry lock files
 FROM pyenv as ludwig-gpu
-RUN pip install ludwig=0.5.4
+RUN pip install ludwig==0.5.4
 
 CMD ["python3"]
