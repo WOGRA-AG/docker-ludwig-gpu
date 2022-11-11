@@ -11,6 +11,8 @@ name: Publish Docker image
 
 on:
   push: 
+    branches:
+      - main
     tags:
       - '*'
 
@@ -41,3 +43,13 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          target: base
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}-jupyter
+          target: jupyter
