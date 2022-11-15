@@ -1,4 +1,6 @@
-FROM nvidia/cuda:11.8.0-base-ubuntu22.04 AS base
+ARG UBUNTU_VERSION=22.04
+ARG CUDA=11.8.0
+FROM nvidia/cuda:${CUDA}-base-ubuntu${UBUNTU_VERSION} AS base
 RUN apt update && apt install -y --no-install-recommends curl
 
 RUN apt install -y --no-install-recommends python3 python3-pip

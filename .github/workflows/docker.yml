@@ -32,9 +32,16 @@ jobs:
       
       - name: Extract ludwig-gpu metadata (tags, labels) for Docker
         id: meta-ludwig-gpu
-        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        uses: docker/metadata-action@v4
         with:
           images: wogra/ludwig-gpu
+          tags: |
+            # branch event
+            type=ref,event=branch
+            # tag event
+            type=ref,event=tag
+            # latest for default branch
+            type=raw,value=latest,enable={{is_default_branch}}
       
       - name: Build and push Docker image
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
@@ -42,14 +49,21 @@ jobs:
           context: .
           push: true
           tags: ${{ steps.meta-ludwig-gpu.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          labels: ${{ steps.meta-ludwig-gpu.outputs.labels }}
           target: base
       
       - name: Extract ludwig-gpu-jupyterhub metadata (tags, labels) for Docker
         id: meta-ludwig-gpu-jupyterhub
-        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        uses: docker/metadata-action@v4
         with:
           images: wogra/ludwig-gpu-jupyterhub
+          tags: |
+            # branch event
+            type=ref,event=branch
+            # tag event
+            type=ref,event=tag
+            # latest for default branch
+            type=raw,value=latest,enable={{is_default_branch}}
       
       - name: Build and push Docker image
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
@@ -57,5 +71,5 @@ jobs:
           context: .
           push: true
           tags: ${{ steps.meta-ludwig-gpu-jupyterhub.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}-jupyterhub
+          labels: ${{ steps.meta-ludwig-gpu-jupyterhub.outputs.labels }}
           target: jupyterhub
